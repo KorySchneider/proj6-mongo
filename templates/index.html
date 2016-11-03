@@ -40,7 +40,7 @@
 
     <a href='/create' class='button' id='create-memo'>Create Memo</a>
 
-    <input type='button' id='delete-selected' value='Delete selected memos' />
+    <input type='button' id='delete-memos' value='Delete selected memos' />
 
     <br><br>
 
@@ -49,7 +49,7 @@
       <div class="memo">
         <div class="row">
           <div class='col-md-1'>
-            <input type='checkbox' class='memo-checkbox' />
+              <input type='checkbox' class='memo-checkbox' value="{{ memo._id }}" />
           </div>
           <div class="col-md-2">
             {{ memo.date | humanize }}
@@ -69,11 +69,32 @@
 </body>
 
 <style>
-#delete-selected {
+#delete-memos {
   position: absolute;
   top: 10;
   right: 10;
 }
 </style>
+
+<script>
+$(document).ready(function() {
+  $('#delete-memos').click(function() {
+    var checkboxes = $('.memo-checkbox');
+    for (var i=0; i < checkboxes.length; i++) {
+      if (checkboxes[i].checked) {
+        removeMemo(checkboxes[i].value)
+      }
+    }
+  })
+});
+
+function removeMemo(id) {
+  $.getJSON('/_remove_memo', { '_id': id },function(data) {
+      data.success
+        ? location.reload()
+        : alert('memo(s) not removed from database\n(bad connection?)');
+  });
+}
+</script>
 
 </html>

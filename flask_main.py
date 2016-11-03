@@ -21,6 +21,8 @@ from flask import jsonify
 
 import json
 import logging
+import uuid
+from operator import itemgetter
 
 # Date handling
 import arrow    # Replacement for datetime, based on moment.js
@@ -62,15 +64,13 @@ except:
 @app.route("/")
 @app.route("/index")
 def index():
-    app.logger.debug("Main page entry")
     g.memos = get_memos()
-    for memo in g.memos:
-        app.logger.debug("Memo: " + str(memo))
+    #for memo in g.memos:
+    #    app.logger.debug("Memo: " + str(memo))
     return flask.render_template('index.html')
 
 @app.route("/create")
 def create():
-    app.logger.debug("Create page entry")
     return flask.render_template('create.html')
 
 ###
@@ -92,8 +92,20 @@ def _create_memo():
 
     text = request.args.get('text', type=str)
     date = request.args.get('date', type=str)
+    app.logger.debug('date:')
+    app.logger.debug(date)
     try:
-        collection.insert({ 'text': text, 'date': date, 'type': 'dated_memo' })
+        collection.insert({ 'text': text, 'date': date, '_id': str(uuid.uuid4()), 'type': 'dated_memo' })
+        return jsonify({ 'success': True })
+    except:
+        return jsonify({ 'success': False })
+
+@app.route('/_remove_memo')
+def _remove_memo():
+    global collection
+    try:
+        memo_id = request.args.get('_id', type=str)
+        collection.remove({ '_id': memo_id })
         return jsonify({ 'success': True })
     except:
         return jsonify({ 'success': False })
@@ -133,10 +145,9 @@ def get_memos():
     records = [ ]
     for record in collection.find( { "type": "dated_memo" } ):
         record['date'] = arrow.get(record['date']).isoformat()
-        del record['_id']
         records.append(record)
-    return records
-
+    sorted_records = sorted(records, key=itemgetter('date'))
+    return sorted_records
 
 if __name__ == "__main__":
     app.debug=CONFIG.DEBUG

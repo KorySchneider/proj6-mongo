@@ -77,9 +77,12 @@ $(document).ready(function() {
 function createMemo(text, date) {
   $.getJSON('/_create_memo', { text: text, date: date },
       function(data) {
+        console.log(data);
+        console.log(data.uid);
+
         data.success
           ? window.location.href = '/index'
-          : alert('something went wrong, memo not added to db');
+          : alert('something went wrong, memo not added to db\n(db server running?)');
       }
   );
 }
