@@ -9,7 +9,7 @@ Representation conventions for dates:
      order as arrow date objects, and they are easy to convert to and from
      arrow date objects.  (For display on screen, we use the 'humanize' filter
      below.) A time zone offset will
-   - User input/output is in local (to the server) time. 
+   - User input/output is in local (to the server) time.
 """
 
 import flask
@@ -39,11 +39,12 @@ MONGO_CLIENT_URL = "mongodb://{}:{}@localhost:{}/{}".format(
 ###
 # Globals
 ###
+
 import CONFIG
 app = flask.Flask(__name__)
 app.secret_key = CONFIG.secret_key
 
-####
+###
 # Database connection per server process
 ###
 
@@ -56,8 +57,6 @@ except:
     print("Failure opening database.  Is Mongo running? Correct password?")
     sys.exit(1)
 
-
-
 ###
 # Pages
 ###
@@ -65,19 +64,20 @@ except:
 @app.route("/")
 @app.route("/index")
 def index():
-  app.logger.debug("Main page entry")
-  g.memos = get_memos()
-  for memo in g.memos:
-      app.logger.debug("Memo: " + str(memo))
-  return flask.render_template('index.html')
+    app.logger.debug("Main page entry")
+    g.memos = get_memos()
+    for memo in g.memos:
+        app.logger.debug("Memo: " + str(memo))
+    return flask.render_template('index.html')
 
+@app.route("/create")
+def create():
+    app.logger.debug("Create page entry")
+    return flask.render_template('create.html')
 
-# We don't have an interface for creating memos yet
-# @app.route("/create")
-# def create():
-#     app.logger.debug("Create")
-#     return flask.render_template('create.html')
-
+###
+# Error handling
+###
 
 @app.errorhandler(404)
 def page_not_found(error):
@@ -86,12 +86,20 @@ def page_not_found(error):
                                  badurl=request.base_url,
                                  linkback=url_for("index")), 404
 
-#################
-#
-# Functions used within the templates
-#
-#################
+###
+# AJAX request handlers
+###
 
+@app.route('/_create_memo')
+def _create_memo():
+    text = request.args.get('text', type=str)
+    date = request.args.get('date', type=str)
+    return jsonify(
+    # TODO add memo to database
+
+###
+# Functions used within the templates
+###
 
 @app.template_filter( 'humanize' )
 def humanize_arrow_date( date ):
@@ -114,12 +122,9 @@ def humanize_arrow_date( date ):
         human = date
     return human
 
-
-#############
-#
+###
 # Functions available to the page code above
-#
-##############
+###
 def get_memos():
     """
     Returns all memos in the database, in a form that
@@ -137,5 +142,3 @@ if __name__ == "__main__":
     app.debug=CONFIG.DEBUG
     app.logger.setLevel(logging.DEBUG)
     app.run(port=CONFIG.PORT,host="0.0.0.0")
-
-   

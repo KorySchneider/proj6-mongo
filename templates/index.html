@@ -24,40 +24,47 @@
 </head>
 
 <body>
-
   <div class="container">
+    <!-- Flashed messages before content -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class=flashes>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
  
-  <!-- Flashed messages before content -->
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <ul class=flashes>
-      {% for message in messages %}
-        <li>{{ message }}</li>
-      {% endfor %}
-      </ul>
-    {% endif %}
-  {% endwith %}
- 
-  <h1>Memos</h1>
- 
-  {% if g.memos %}
-      {% for memo in g.memos %}
-    <div class="memo">
-    <div class="row">
-    <div class="col-md-2">
-      {{ memo.date | humanize }}
-    </div>
-    <div class="col-md-10">
-      {{ memo.text }}
-    </div>
-    </div> <!-- row -->
-    </div> <!-- memo -->
-    {% endfor %}
-  {% else %}
-    <p>No memos for you. </p> 
-  {% endif %}
- 
-  </div> <!-- container -->
+    <h1>Memos</h1>
 
+    <a href='/create' class='button' id='create-memo'>Create Memo</a>
+
+    <br><br>
+ 
+    {% if g.memos %}
+        {% for memo in g.memos %}
+      <div class="memo">
+      <div class="row">
+      <div class="col-md-2">
+        {{ memo.date | humanize }}
+      </div>
+      <div class="col-md-10">
+        {{ memo.text }}
+      </div>
+      </div> <!-- row -->
+      </div> <!-- memo -->
+      {% endfor %}
+    {% else %}
+      <p>No memos for you. </p> 
+    {% endif %}
+  </div> <!-- container -->
 </body>
+
+<style>
+#create-memo {
+  display: inline;
+}
+</style>
+
 </html>
