@@ -70,14 +70,16 @@ $(document).ready(function() {
   $('#memo-submit').click(function() {
     var text = $('#memo-text').val();
     var date = $('#memo-date').val();
+    createMemo(text, date);
   });
 });
 
-function create_memo(text, date) {
-  // TODO getJSON might not be the best way to do this
+function createMemo(text, date) {
   $.getJSON('/_create_memo', { text: text, date: date },
       function(data) {
-        location.href = '/index';
+        data.success
+          ? window.location.href = '/index'
+          : alert('something went wrong, memo not added to db');
       }
   );
 }
