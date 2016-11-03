@@ -1,6 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html> <head>
-<title>Memos</title>
+
+  <title>Memos</title>
 
   <!-- 'viewport' is used by bootstrap to respond to device size -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,43 +21,43 @@
    <!-- Our own style sheet -->
    <link rel="stylesheet" href="/static/css/memos.css" />
 
-
 </head>
+
 <body>
-<div class="container">
 
-<!-- Flashed messages before content -->
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul class=flashes>
-    {% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
-
-<h1>Memos</h1>
-
-{% if g.memos %}
-    {% for memo in g.memos %}
-  <div class="memo">
-  <div class="row">
-  <div class="col-md-2">
-    {{ memo.date | humanize }}
-  </div>
-  <div class="col-md-10">
-    {{ memo.text }}
-  </div>
-  </div> <!-- row -->
-  </div> <!-- memo -->
-  {% endfor %}
-{% else %}
-  <p>No memos for you. </p>  
-{% endif %}
-
+  <div class="container">
  
+  <!-- Flashed messages before content -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class=flashes>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+ 
+  <h1>Memos</h1>
+ 
+  {% if g.memos %}
+      {% for memo in g.memos %}
+    <div class="memo">
+    <div class="row">
+    <div class="col-md-2">
+      {{ memo.date | humanize }}
+    </div>
+    <div class="col-md-10">
+      {{ memo.text }}
+    </div>
+    </div> <!-- row -->
+    </div> <!-- memo -->
+    {% endfor %}
+  {% else %}
+    <p>No memos for you. </p> 
+  {% endif %}
+ 
+  </div> <!-- container -->
 
-</div> <!-- container -->
 </body>
 </html>
