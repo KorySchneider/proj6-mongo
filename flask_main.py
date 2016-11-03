@@ -65,8 +65,6 @@ except:
 @app.route("/index")
 def index():
     g.memos = get_memos()
-    #for memo in g.memos:
-    #    app.logger.debug("Memo: " + str(memo))
     return flask.render_template('index.html')
 
 @app.route("/create")
@@ -78,7 +76,6 @@ def create():
 ###
 @app.errorhandler(404)
 def page_not_found(error):
-    app.logger.debug("Page not found")
     return flask.render_template('page_not_found.html',
                                  badurl=request.base_url,
                                  linkback=url_for("index")), 404
@@ -92,8 +89,6 @@ def _create_memo():
 
     text = request.args.get('text', type=str)
     date = request.args.get('date', type=str)
-    app.logger.debug('date:')
-    app.logger.debug(date)
     try:
         collection.insert({ 'text': text, 'date': date, '_id': str(uuid.uuid4()), 'type': 'dated_memo' })
         return jsonify({ 'success': True })
