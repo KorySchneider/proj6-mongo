@@ -17,6 +17,7 @@ from flask import g
 from flask import render_template
 from flask import request
 from flask import url_for
+from flask import jsonify
 
 import json
 import logging
@@ -39,7 +40,6 @@ MONGO_CLIENT_URL = "mongodb://{}:{}@localhost:{}/{}".format(
 ###
 # Globals
 ###
-
 import CONFIG
 app = flask.Flask(__name__)
 app.secret_key = CONFIG.secret_key
@@ -47,7 +47,6 @@ app.secret_key = CONFIG.secret_key
 ###
 # Database connection per server process
 ###
-
 try:
     dbclient = MongoClient(MONGO_CLIENT_URL)
     db = getattr(dbclient, secrets.client_secrets.db)
@@ -60,7 +59,6 @@ except:
 ###
 # Pages
 ###
-
 @app.route("/")
 @app.route("/index")
 def index():
@@ -78,7 +76,6 @@ def create():
 ###
 # Error handling
 ###
-
 @app.errorhandler(404)
 def page_not_found(error):
     app.logger.debug("Page not found")
@@ -89,17 +86,21 @@ def page_not_found(error):
 ###
 # AJAX request handlers
 ###
-
 @app.route('/_create_memo')
 def _create_memo():
+    global collection
+
     text = request.args.get('text', type=str)
     date = request.args.get('date', type=str)
-    # TODO add memo to database
+    try:
+        collection.insert({ 'text': text, 'date': date, 'type': 'dated_memo' })
+        return jsonify({ 'success': True })
+    except:
+        return jsonify({ 'success': False })
 
 ###
 # Functions used within the templates
 ###
-
 @app.template_filter( 'humanize' )
 def humanize_arrow_date( date ):
     """
