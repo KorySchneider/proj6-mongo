@@ -94,7 +94,6 @@ def page_not_found(error):
 def _create_memo():
     text = request.args.get('text', type=str)
     date = request.args.get('date', type=str)
-    return jsonify(
     # TODO add memo to database
 
 ###
