@@ -4,7 +4,7 @@ Nose tests for db_functions.py
 
 import db_functions, flask_main, uuid, arrow
 
-col = db_functions.connect()
+col = db_functions.connect() # db collection
 
 def test_create_remove():
     """
