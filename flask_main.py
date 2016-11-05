@@ -22,6 +22,7 @@ from flask import url_for
 from flask import jsonify
 
 import logging
+import uuid
 
 # Date handling
 import arrow
@@ -69,8 +70,9 @@ def _create_memo():
 
     text = request.args.get('text', type=str)
     date = request.args.get('date', type=str)
+    uid = str(uuid.uuid4())
     try:
-        db_functions.create(text, date)
+        db_functions.create(text, date, uid)
         return jsonify({ 'success': True })
     except:
         return jsonify({ 'success': False })

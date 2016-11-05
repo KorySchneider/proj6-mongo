@@ -1,4 +1,4 @@
-import uuid, arrow
+import arrow
 from operator import itemgetter
 
 from pymongo import MongoClient
@@ -22,12 +22,12 @@ def connect():
         collection = db.dated
         return collection
     except:
-        print("Failure opening database.  Is Mongo running? Correct password?")
+        print("Failure opening database. Is Mongo running? Correct password?")
         sys.exit(1)
 
-def create(text, date):
+def create(text, date, uid):
     global collection
-    collection.insert({ 'text': text, 'date': date, '_id': str(uuid.uuid4()), 'type': 'dated_memo' })
+    collection.insert({ 'text': text, 'date': date, '_id': uid, 'type': 'dated_memo' })
 
 def remove(uid):
     global collection
