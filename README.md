@@ -1,54 +1,42 @@
 # proj6-mongo
-Simple list of dated memos kept in MongoDB database
 
-## What is here
+_Kory Schneider_
 
-A simple Flask app that displays all the dated memos it finds in a MongoDB database.
-There is also a 'scaffolding' program, db_trial.py, for inserting a couple records into the database 
-and printing them out.  Get db_trial.py working before you try making your flask app work. 
+_CIS 322, Fall 2016_
 
-## What is not here
+## What is this?
+This is a simple web program that uses [MongoDB](https://www.mongodb.com/) to
+store memos (which in this case are strings of text with an associated date).
 
-In addition to the missing functionality in the application, you will
-need a MongoDB database, and you will need credentials (user name and
-password) both for an administrative user and a regular user.  The
-administrative user may be you, but the regular user is your
-application. Make a subdirectory called "secrets" and place two files
-in it: 
+## Installation
+First clone the repository:
 
-- secrets/admin_secrets.py holds configuration information for your MongoDB
-  database, including the administrative password.  
-= secrets/client_secrets.py holds configuration information for your
-  application. 
+    $ cd where/you/want/it
+    $ git clone https://github.com/koryschneider/proj6-mongo
+    $ cd proj6-mongo
 
+Then you will need to create a couple files containing credentials and some configuration:
 
+    $ mkdir secrets; cd secrets
+    $ touch admin_secrets.py
+    $ touch client_secrets.py
 
-## Functionality you'll add
+To see examples of `*_secrets.py`, see the [main project repository](https://github.com/UO-CIS-322/proj6-mongo/tree/master/secrets).
+Some of the fields in `client_secrets.py` is not necessary to run the program,
+as it was simply used for grading. These fields are `author`, `repo`, and `server_main`.
 
-The user should be able to add dated memos, either from the same index page or from a separate page. 
-Memos should be displayed in date order. 
-The user should be able to delete memos. 
+Finally, set up the environment and run the server:
 
-## Setting up
+    $ bash configure && make service
 
-Our use of the database is pretty simple, but you should anticipate
-that installing MongoDB could take some time.  Since you may not be
-able to install the same version of MongoDB on your development
-computer and your Pi, it will be especially important to test your
-project on the Pi. 
+## Usage
 
-The version of MongoDB available for installing on Raspberry Pi with
-apt-get is 2.4.  The version you can find for your development
-computer is probably 3.x.  You may even have difficulty finding
-documentation for 2.4, as it is considered obsolete.  However,
-commands that work for 2.4 still seem to work for 3.x, so you should
-write your application and support scripts to use 2.4.   The
-difference that may cause you the most headaches is in creating
-database user accounts (which are different than the Unix accounts for
-users). 
+`$ make service` will start a Green Unicorn (gunicorn) server, which is more suitable for running over a long period of time.
 
-In Python, the pymongo API works with both versions of MongoDB, so
-it's only the initial setup where you have to be  
-careful to use the right version-specific commands. 
+`$ make run` will launch the server in debugging mode.
 
+`$ make test` will run the test suite.
 
+## Credit
+
+Forked from Michal Young at https://github.com/UO-CIS-322/proj4-brevets for CIS 322: Intro to Software Engineering.
