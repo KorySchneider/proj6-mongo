@@ -2,14 +2,19 @@
 Nose tests for humanizing time
 """
 
-import flask_main
+import flask_main, arrow
 
 def test_humanize():
-    assert flask_main.humanize_arrow_date('2015-11-04') == 'a year ago'
-    assert flask_main.humanize_arrow_date('2016-10-04') == 'a month ago'
-    assert flask_main.humanize_arrow_date('2016-11-02') == '2 days ago'
-    assert flask_main.humanize_arrow_date('2016-11-03') == 'yesterday'
-    assert flask_main.humanize_arrow_date('2016-11-04') == 'today'
-    assert flask_main.humanize_arrow_date('2016-11-05') == 'tomorrow'
-    assert flask_main.humanize_arrow_date('2016-11-06') == 'in 2 days'
-    assert flask_main.humanize_arrow_date('2016-12-04') == 'in a month'
+    """
+    Make sure times are humanized correctly
+    """
+    today = arrow.now()
+    assert flask_main.humanize_arrow_date(today.replace(years=-1).date()) == 'a year ago'
+    assert flask_main.humanize_arrow_date(today.replace(months=-1).date()) == 'a month ago'
+    assert flask_main.humanize_arrow_date(today.replace(days=-2).date()) == '2 days ago'
+    assert flask_main.humanize_arrow_date(today.replace(days=-1).date()) == 'yesterday'
+    assert flask_main.humanize_arrow_date(today.date()) == 'today'
+    assert flask_main.humanize_arrow_date(today.replace(days=+1).date()) == 'tomorrow'
+    assert flask_main.humanize_arrow_date(today.replace(days=+2).date()) == 'in 2 days'
+    assert flask_main.humanize_arrow_date(today.replace(months=+1).date()) == 'in a month'
+    assert flask_main.humanize_arrow_date(today.replace(years=+1).date()) == 'in a year'
