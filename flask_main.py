@@ -98,8 +98,6 @@ def humanize_arrow_date( date ):
     Arrow will try to humanize down to the minute, so we
     need to catch 'today' as a special case.
     """
-    tz_offset = int(request.cookies.get('tz_offset'))
-
     try:
         then = arrow.get(date).to('local').replace(hours=0, minutes=0, seconds=0)
         now = arrow.utcnow().to('local').replace(hours=0, minutes=0, seconds=0)
