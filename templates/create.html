@@ -52,6 +52,7 @@
       <br><br>
 
       <input type='button' id='memo-submit' value='Create' />
+      <input type='button' id='cancel-create' value='Cancel' />
     </form>
 
   </div> <!-- container -->
@@ -63,6 +64,10 @@
   height: 200px;
   width: 400px;
 }
+
+#cancel-create {
+  margin-left: 10px;
+}
 </style>
 
 <script>
@@ -71,6 +76,10 @@ $(document).ready(function() {
     var text = $('#memo-text').val();
     var date = $('#memo-date').val();
     createMemo(text, date);
+  });
+
+  $('#cancel-create').click(function() {
+    window.location.href = '/index';
   });
 });
 
