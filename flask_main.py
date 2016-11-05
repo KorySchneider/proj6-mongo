@@ -117,14 +117,25 @@ def humanize_arrow_date( date ):
     need to catch 'today' as a special case.
     """
     try:
-        then = arrow.get(date).to('local')
-        now = arrow.utcnow().to('local')
+        then = arrow.get(date).to('local').replace(hours=0, minutes=0, seconds=0)
+        now = arrow.utcnow().to('local').replace(hours=0, minutes=0, seconds=0)
+
+        time = str(now.time()).split(':')
+        hour = int(time[0])
+        minute = int(time[1])
+        second = int(float(time[2]))
+        then = then.replace(hours=hour, minutes=minute, seconds=second)
+
         if then.date() == now.date():
-            human = "Today"
+            human = "today"
+        elif then.date() == now.replace(days=+1).date():
+            human = "tomorrow"
+        elif then.date() == now.replace(days=-1).date():
+            human = "yesterday"
         else:
             human = then.humanize(now)
             if human == "in a day":
-                human = "Tomorrow"
+                human = "tomorrow"
     except:
         human = date
     return human
