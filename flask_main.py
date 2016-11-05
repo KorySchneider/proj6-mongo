@@ -12,6 +12,8 @@ Representation conventions for dates:
    - User input/output is in local (to the server) time.
 """
 
+import db_functions # functions for interacting with the database
+
 import flask
 from flask import g
 from flask import render_template
@@ -19,25 +21,10 @@ from flask import request
 from flask import url_for
 from flask import jsonify
 
-import json
 import logging
-import uuid
-from operator import itemgetter
 
 # Date handling
-import arrow    # Replacement for datetime, based on moment.js
-# import datetime # But we may still need time
-from dateutil import tz  # For interpreting local times
-
-# Mongo database
-from pymongo import MongoClient
-import secrets.admin_secrets
-import secrets.client_secrets
-MONGO_CLIENT_URL = "mongodb://{}:{}@localhost:{}/{}".format(
-    secrets.client_secrets.db_user,
-    secrets.client_secrets.db_user_pw,
-    secrets.admin_secrets.port,
-    secrets.client_secrets.db)
+import arrow
 
 ###
 # Globals
@@ -47,16 +34,9 @@ app = flask.Flask(__name__)
 app.secret_key = CONFIG.secret_key
 
 ###
-# Database connection per server process
+# Initialize database connection
 ###
-try:
-    dbclient = MongoClient(MONGO_CLIENT_URL)
-    db = getattr(dbclient, secrets.client_secrets.db)
-    collection = db.dated
-
-except:
-    print("Failure opening database.  Is Mongo running? Correct password?")
-    sys.exit(1)
+db_functions.connect()
 
 ###
 # Pages
@@ -64,7 +44,7 @@ except:
 @app.route("/")
 @app.route("/index")
 def index():
-    g.memos = get_memos()
+    g.memos = db_functions.get_memos()
     return flask.render_template('index.html')
 
 @app.route("/create")
@@ -90,7 +70,7 @@ def _create_memo():
     text = request.args.get('text', type=str)
     date = request.args.get('date', type=str)
     try:
-        collection.insert({ 'text': text, 'date': date, '_id': str(uuid.uuid4()), 'type': 'dated_memo' })
+        db_functions.create(text, date)
         return jsonify({ 'success': True })
     except:
         return jsonify({ 'success': False })
@@ -100,7 +80,7 @@ def _remove_memo():
     global collection
     try:
         memo_id = request.args.get('_id', type=str)
-        collection.remove({ '_id': memo_id })
+        db_functions.remove(memo_id)
         return jsonify({ 'success': True })
     except:
         return jsonify({ 'success': False })
@@ -116,6 +96,8 @@ def humanize_arrow_date( date ):
     Arrow will try to humanize down to the minute, so we
     need to catch 'today' as a special case.
     """
+    tz_offset = int(request.cookies.get('tz_offset'))
+
     try:
         then = arrow.get(date).to('local').replace(hours=0, minutes=0, seconds=0)
         now = arrow.utcnow().to('local').replace(hours=0, minutes=0, seconds=0)
@@ -139,21 +121,6 @@ def humanize_arrow_date( date ):
     except:
         human = date
     return human
-
-###
-# Functions available to the page code above
-###
-def get_memos():
-    """
-    Returns all memos in the database, in a form that
-    can be inserted directly in the 'session' object.
-    """
-    records = [ ]
-    for record in collection.find( { "type": "dated_memo" } ):
-        record['date'] = arrow.get(record['date']).isoformat()
-        records.append(record)
-    sorted_records = sorted(records, key=itemgetter('date'))
-    return sorted_records
 
 if __name__ == "__main__":
     app.debug=CONFIG.DEBUG
